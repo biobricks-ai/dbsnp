@@ -1,0 +1,25 @@
+schema: '2.0'
+stages:
+  download:
+    cmd: Rscript R/download.R
+    deps:
+    - path: R/download.R
+      md5: d3754c2dc39f29703230b47b69123b63
+      size: 382
+    outs:
+    - path: cache/GCF_000001405.39.gz
+      md5: 9dff5494733d023b66e0bf340c4e4512
+      size: 25648980738
+  process:
+    cmd: Rscript R/process.R
+    deps:
+    - path: R/process.R
+      md5: abf4f5f36ae201bfdd2f707edc992d6a
+      size: 806
+    - path: cache/GCF_000001405.39.gz
+      md5: 9dff5494733d023b66e0bf340c4e4512
+      size: 25648980738
+    outs:
+    - path: data/dbSNP.parquet
+      md5: aed770f69b0f84d4e049fb2a5b6b33da
+      size: 54143185991
