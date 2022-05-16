@@ -1,33 +1,33 @@
-library(kiln)
 library(arrow)
 library(purrr)
-library(stringr)
-library(vroom)
 
-cache_dir <- "cache"
+download_dir <- "download"
 data_dir <- "data"
 
-mkdir(cache_dir)
-mkdir(data_dir)
+fs::dir_create(data_dir)
 
-gzip_file <- list.files(cache_dir) |>
+gzip_file <- list.files(download_dir) |>
     purrr::keep(~ (grepl("*.gz", .x))) |>
-    pluck(1)
-gzip_inputfile <- file.path(cache_dir,gzip_file)
+    purrr::pluck(1)
+gzip_inputfile <- file.path(download_dir,gzip_file)
 # gunzip file
-system(str_interp("gunzip -f ${gzip_inputfile}"))
+system(sprintf("gunzip -f %s",gzip_inputfile))
 
-gunzipped_file <- list.files(cache_dir) |>
+gunzipped_file <- list.files(download_dir) |>
     purrr::keep(~ !(grepl("*.gz", .x))) |>
-    pluck(1)
-gunzipped_inputfile <- file.path(cache_dir,gunzipped_file)
+    purrr::pluck(1)
+gunzipped_inputfile <- file.path(download_dir,gunzipped_file)
+sed_mod_gunzipped_inputfile <- file.path(data_dir,gunzipped_file)
 
-arrow::write_dataset(arrow::open_dataset(gunzipped_inputfile,
+system(sprintf("sed '1,37d' %s > %s",gunzipped_inputfile,sed_mod_gunzipped_inputfile))
+
+arrow::write_dataset(arrow::open_dataset(sed_mod_gunzipped_inputfile,
         format = "tsv"),
     format = "parquet",
     path = data_dir)
 
-parquet_file <- file.path(data_dir,list.files(data_dir))
+parquet_file <- fs::dir_ls(data_dir,regexp="*.parquet")
 # move the file 
-file.rename(parquet_file,file.path(data_dir,"dbSNP.parquet"))
-# delete the cache
+fs::file_move(parquet_file,file.path(data_dir,"dbSNP.parquet"))
+# delete the sed file
+unlink(sed_mod_gunzipped_inputfile)

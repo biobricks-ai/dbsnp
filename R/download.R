@@ -1,14 +1,15 @@
-library(kiln)
+library(fs)
 library(purrr)
-cache_dir <- "cache"
-mkdir(cache_dir)
+options(timeout=3600)
+download_dir <- "download"
+fs::dir_create(download_dir)
 
-# list the files
-host <- "ftp.ncbi.nih.gov"
-dir <- "/snp/latest_release/VCF"
-
-system(paste0("ncftpls ", "ftp://", host, dir, "/"), intern = TRUE) |>
-    purrr::keep(~ grepl("*39*.gz$", .x)) |>
-    walk(~ system(paste0(
-        "ncftpget -A -B 33554432 -R ",
-        host, " ", cache_dir, " ", file.path(dir, .x))))
+print("Downloading Files")
+url <- "http://ftp.ncbi.nih.gov/snp/latest_release/VCF"
+ftp = stringr::str_replace(url,"http","ftp")
+url |> rvest::read_html() |>
+rvest::html_elements("a") |>
+rvest::html_attr("href") |>
+purrr::keep(~ grepl("*39*.gz$",.x)) |>
+purrr::pluck(1) |>
+purrr::walk(~ download.file(url=file.path(ftp,.x),destfile=(file.path(download_dir,.x))))
