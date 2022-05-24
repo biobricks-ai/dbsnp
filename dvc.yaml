@@ -4,8 +4,7 @@ stages:
     deps:
       - R/download.R
     outs:
-      - download/GCF_000001405.39.gz:
-          cache: false
+      - download/GCF_000001405.39.gz
   process:
     cmd: Rscript R/process.R
     deps:
