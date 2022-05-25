@@ -1,33 +1,25 @@
-library(arrow)
+library(arrow,include.only=c("write_parquet"))
 library(purrr)
+library(future)
+future::plan(future::multisession(workers = 5))
 
-download_dir <- "download"
-data_dir <- "data"
+out <- fs::dir_create("data/dbSNP.parquet/")
 
-fs::dir_create(data_dir)
+read.fn <- \(con,num){ readLines(con, n=num) }
+write   <- \(tbl,pos){ arrow::write_parquet(tbl,fs::path(out,pos,ext="parquet")); T }
+load.fn <- \(lns,pos){ read.table(text=lns,sep="\t",comment.char="#") |> write(pos=pos) }
+stop.fn <- \(lns,pos){ length(lns) < 1000 }
 
-gzip_file <- list.files(download_dir) |>
-    purrr::keep(~ (grepl("*.gz", .x))) |>
-    purrr::pluck(1)
-gzip_inputfile <- file.path(download_dir,gzip_file)
-# gunzip file
-system(sprintf("gunzip -f %s",gzip_inputfile))
+options(future.globals.maxSize=4e9)
+processor <- function(con, read.fn, load.fn, stop.fn, nrow=10,p=\(){}){
+  futures   <- list()
+  \(pos=1,...){
+    cat("reading ",pos,"\n")
+    tbl     <-  read.fn(con,nrow) 
+    futures <<- c(futures,future({load.fn(tbl,pos)}))
+    if(stop.fn(tbl,pos)){ value(futures); done(futures) }else{ pos+nrow }
+  }
+}
 
-gunzipped_file <- list.files(download_dir) |>
-    purrr::keep(~ !(grepl("*.gz", .x))) |>
-    purrr::pluck(1)
-gunzipped_inputfile <- file.path(download_dir,gunzipped_file)
-sed_mod_gunzipped_inputfile <- file.path(data_dir,gunzipped_file)
-
-system(sprintf("sed '1,37d' %s > %s",gunzipped_inputfile,sed_mod_gunzipped_inputfile))
-
-arrow::write_dataset(arrow::open_dataset(sed_mod_gunzipped_inputfile,
-        format = "tsv"),
-    format = "parquet",
-    path = data_dir)
-
-parquet_file <- fs::dir_ls(data_dir,regexp="*.parquet")
-# move the file 
-fs::file_move(parquet_file,file.path(data_dir,"dbSNP.parquet"))
-# delete the sed file
-unlink(sed_mod_gunzipped_inputfile)
+con <- fs::dir_ls("download",regexp="*.gz$")[1] |> gzfile("rb")
+reduce(1:1e9, processor(con, read.fn, load.fn, stop.fn, nrow=1e7))
