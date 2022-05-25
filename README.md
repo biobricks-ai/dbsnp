@@ -7,7 +7,7 @@ dependencies:
     url: https://www.ncbi.nlm.nih.gov/snp/
 ---
 
-<a href="https://github.com/biobricks-ai/dbSNP/actions"><img src="https://github.com/biobricks-ai/hello-brick/actions/workflows/bricktools-check.yaml/badge.svg?branch=master"/></a>
+<a href="https://github.com/biobricks-ai/dbSNP/actions"><img src="https://github.com/biobricks-ai/dbSNP/actions/workflows/bricktools-check.yaml/badge.svg?branch=master"/></a>
 
 dbSNP - The Single Nucleotide Polymorphism Database
 
