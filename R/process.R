@@ -1,25 +1,28 @@
 library(arrow,include.only=c("write_parquet"))
 library(purrr)
+library(readr)
 library(future)
-future::plan(future::multisession(workers = 5))
+library(progressr)
+future::plan(future::multisession(workers = 15))
+library(furrr)
 
-out <- fs::dir_create("data/dbSNP.parquet/")
+out   <- fs::dir_create("data/dbSNP.parquet/")
+parts <- fs::path(out,"gcf.gz.part")
 
-read.fn <- \(con,num){ readLines(con, n=num) }
-write   <- \(tbl,pos){ arrow::write_parquet(tbl,fs::path(out,pos,ext="parquet")); T }
-load.fn <- \(lns,pos){ read.table(text=lns,sep="\t",comment.char="#") |> write(pos=pos) }
-stop.fn <- \(lns,pos){ length(lns) < 1000 }
+cmd <- paste0("pv download/GCF_000001405.39.gz | gunzip -c | split -l 10000000 - ",parts)
+system(cmd)
 
-options(future.globals.maxSize=4e9)
-processor <- function(con, read.fn, load.fn, stop.fn, nrow=10,p=\(){}){
-  futures   <- list()
-  \(pos=1,...){
-    cat("reading ",pos,"\n")
-    tbl     <-  read.fn(con,nrow) 
-    futures <<- c(futures,future({load.fn(tbl,pos)}))
-    if(stop.fn(tbl,pos)){ value(futures); done(futures) }else{ pos+nrow }
-  }
-}
+colN <- c("CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO")
+colT <- c(col_character(),col_double(),rep(col_character(),6))
+read <- \(file){ read_tsv(file,comment="#",col_names=F,col_types=colT) } 
 
-con <- fs::dir_ls("download",regexp="*.gz$")[1] |> gzfile("rb")
-reduce(1:1e9, processor(con, read.fn, load.fn, stop.fn, nrow=1e7))
+path <- fs::dir_ls(out,regexp="gcf.gz.part*") 
+sink <- fs::path(out,fs::path_ext(path),ext="parquet")
+
+with_progress({
+  p  <- progressr::progressor(steps=length(path))
+  fn <- \(path,sink){ read(path) |> arrow::write_parquet(sink=sink); p() }
+  furrr::future_walk2(path,sink,fn)
+})
+
+fs::dir_ls(out,regexp="*.gz.part*") |> fs::file_delete()
