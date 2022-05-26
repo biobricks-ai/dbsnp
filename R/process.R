@@ -14,7 +14,7 @@ system(cmd)
 
 colN <- c("CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO")
 colT <- c(col_character(),col_double(),rep(col_character(),6))
-read <- \(file){ read_tsv(file,comment="#",col_names=F,col_types=colT) } 
+read <- \(file){ read_tsv(file,comment="#",col_names=colN,col_types=colT) } 
 
 path <- fs::dir_ls(out,regexp="gcf.gz.part*") 
 sink <- fs::path(out,fs::path_ext(path),ext="parquet")
