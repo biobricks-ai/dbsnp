@@ -11,4 +11,4 @@ stages:
       - R/process.R
       - download
     outs:
-      - data/dbSNP.parquet
+      - brick/dbSNP.parquet
