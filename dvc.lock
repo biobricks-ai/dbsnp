@@ -4,23 +4,30 @@ stages:
     cmd: Rscript R/download.R
     deps:
     - path: R/download.R
-      md5: 02a13feeaba7cb7a5cce700a3f67325a
-      size: 467
+      hash: md5
+      md5: e9fa1fd48238cddf82d5959648568cf3
+      size: 1029
     outs:
-    - path: download/GCF_000001405.39.gz
-      md5: 9dff5494733d023b66e0bf340c4e4512
-      size: 25648980738
+    - path: download
+      hash: md5
+      md5: 002697b8abf00a850f22834cb8b86aa3.dir
+      size: 29552227779
+      nfiles: 1
   process:
     cmd: Rscript R/process.R
     deps:
     - path: R/process.R
-      md5: ec231bfe05b0fdfcfa37166b17389a3f
-      size: 912
-    - path: download/GCF_000001405.39.gz
-      md5: 9dff5494733d023b66e0bf340c4e4512
-      size: 25648980738
+      hash: md5
+      md5: 56faefaebcee09ca6cb8f45e0bb566e1
+      size: 1514
+    - path: download
+      hash: md5
+      md5: 002697b8abf00a850f22834cb8b86aa3.dir
+      size: 29552227779
+      nfiles: 1
     outs:
     - path: data/dbSNP.parquet
-      md5: 56fcf03d7c89e6450e862933e7075f4a.dir
-      size: 49723327381
-      nfiles: 112
+      hash: md5
+      md5: 14afe2acf3e9baa6aa25d285d62c5755.dir
+      size: 55896790772
+      nfiles: 125

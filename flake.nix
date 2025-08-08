@@ -16,8 +16,13 @@
             rPackages.purrr
             rPackages.rvest
             rPackages.stringr
-            rPackages.pbapply
+            rPackages.arrow
+            rPackages.readr
+            rPackages.future
+            rPackages.progressr
+            rPackages.furrr
             wget
+            pv
           ];
         };
       });

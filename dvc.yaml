@@ -4,11 +4,11 @@ stages:
     deps:
       - R/download.R
     outs:
-      - download/GCF_000001405.39.gz
+      - download
   process:
     cmd: Rscript R/process.R
     deps:
       - R/process.R
-      - download/GCF_000001405.39.gz
+      - download
     outs:
       - data/dbSNP.parquet

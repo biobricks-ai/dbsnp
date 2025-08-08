@@ -3,26 +3,47 @@ library(purrr)
 library(readr)
 library(future)
 library(progressr)
-future::plan(future::multisession(workers = 15))
+future::plan(future::multisession(workers = 10))
 library(furrr)
 
-out   <- fs::dir_create("data/dbSNP.parquet/")
+out   <- fs::dir_create("data/dbSNP.parquet/", recurse=TRUE)
 parts <- fs::path(out,"gcf.gz.part")
 
-cmd <- paste0("pv download/GCF_000001405.39.gz | gunzip -c | split -l 10000000 - ",parts)
+# Find the latest downloaded GCF file
+latest_file <- fs::dir_ls("download", glob="*GCF_*.gz") |>
+  (\(files) {
+    # Extract version numbers
+    versions <- files |> 
+      purrr::map_dbl(~ as.numeric(stringr::str_extract(.x, "\\d+(?=\\.gz$)")))
+    
+    # Return the file with the highest version number
+    files[which.max(versions)]
+  })()
+
+print(paste("Processing file:", latest_file))
+
+cmd <- paste0("pv ", latest_file, " | gunzip -c | split -l 10000000 - ", parts)
 system(cmd)
 
+print("about to do colN")
 colN <- c("CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO")
+print("about to do colT")
 colT <- c(col_character(),col_double(),rep(col_character(),6))
+print("about to read")
 read <- \(file){ read_tsv(file,comment="#",col_names=colN,col_types=colT) } 
+print("finished read block")
 
 path <- fs::dir_ls(out,regexp="gcf.gz.part*") 
 sink <- fs::path(out,fs::path_ext(path),ext="parquet")
+print("made path and sink")
 
 with_progress({
   p  <- progressr::progressor(steps=length(path))
+  print("defined progressor")
   fn <- \(path,sink){ read(path) |> arrow::write_parquet(sink=sink); p() }
+  print("read the path")
   furrr::future_walk2(path,sink,fn)
+  print("futuring")
 })
 
 fs::dir_ls(out,regexp="*.gz.part*") |> fs::file_delete()
