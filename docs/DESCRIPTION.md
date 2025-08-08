@@ -1,4 +1,4 @@
-dbSNP - The Single Nucleotide Polymorphism Database
+# dbSNP - The Single Nucleotide Polymorphism Database
 
 >[dbSNP](https://www.ncbi.nlm.nih.gov/snp/) contains human single nucleotide variations, microsatellites, and small-scale insertions and deletions along with publication, population frequency, molecular consequence, and genomic and RefSeq mapping information for both common variations and clinical mutations.
 
@@ -6,7 +6,7 @@ This brick contains a single file, dbSNP.parquet, representing the flat [VCF v4.
 
 Fields
 
-**CHROM** - chromosome: An identifier from the reference genome or an angle-bracketed ID String (“<ID>”)
+**CHROM** - chromosome: An identifier from the reference genome or an angle-bracketed ID String (`<ID>`)
 pointing to a contig in the assembly file (cf. the ##assembly line in the header). All entries for a specific
 CHROM should form a contiguous block within the VCF file. (String, no whitespace permitted, Required).
 
@@ -26,13 +26,13 @@ Strings must include the base before the event (which must be reflected in the P
 occurs at position 1 on the contig in which case it must include the base after the event; this padding base is
 not required (although it is permitted) for e.g. complex substitutions or other events where all alleles have at
 least one base represented in their Strings. If any of the ALT alleles is a symbolic allele (an angle-bracketed
-ID String “<ID>”) then the padding base is required and POS denotes the coordinate of the base preceding
+ID String `<ID>`) then the padding base is required and POS denotes the coordinate of the base preceding
 the polymorphism. Tools processing VCF files are not required to preserve case in the allele Strings. (String,
 Required).
 
 **ALT** - alternate base(s): Comma separated list of alternate non-reference alleles. These alleles do not have to
 be called in any of the samples. Options are base Strings made up of the bases A,C,G,T,N,*, (case insensitive)
-or an angle-bracketed ID String (“<ID>”) or a breakend replacement string as described in the section on
+or an angle-bracketed ID String (`<ID>`) or a breakend replacement string as described in the section on
 breakends. The ‘*’ allele is reserved to indicate that the allele is missing due to a upstream deletion. If there
 are no alternative alleles, then the missing value should be used. Tools processing VCF files are not required
 to preserve case in the allele String, except for IDs, which are case sensitive. (String; no whitespace, commas,
@@ -89,6 +89,5 @@ data, not called genotypes
 • VALIDATED : validated by follow-up experiment
 
 • 1000G : membership in 1000 Genomes
-
 
 Then follow the instructions to save the data into your local dvc repo
