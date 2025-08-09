@@ -18,15 +18,15 @@ stages:
     deps:
     - path: R/process.R
       hash: md5
-      md5: 56faefaebcee09ca6cb8f45e0bb566e1
-      size: 1514
+      md5: 07fab2e83b9d7bd537a3b043c0060e43
+      size: 1308
     - path: download
       hash: md5
       md5: 002697b8abf00a850f22834cb8b86aa3.dir
       size: 29552227779
       nfiles: 1
     outs:
-    - path: data/dbSNP.parquet
+    - path: brick/dbSNP.parquet
       hash: md5
       md5: 14afe2acf3e9baa6aa25d285d62c5755.dir
       size: 55896790772
