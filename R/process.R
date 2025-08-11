@@ -6,7 +6,7 @@ library(progressr)
 future::plan(future::multisession(workers = 10))
 library(furrr)
 
-out   <- fs::dir_create("brick/dbSNP.parquet/", recurse=TRUE)
+out   <- fs::dir_create("brick")
 parts <- fs::path(out,"gcf.gz.part")
 
 # Find the latest downloaded GCF file
