@@ -3,10 +3,10 @@ library(purrr)
 library(readr)
 library(future)
 library(progressr)
-future::plan(future::multisession(workers = 10))
+future::plan(future::multicore, workers = 8)
 library(furrr)
 
-out   <- fs::dir_create("brick")
+out   <- fs::dir_create("brick/dbSNP.parquet/")
 parts <- fs::path(out,"gcf.gz.part")
 
 # Find the latest downloaded GCF file
