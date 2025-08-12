@@ -26,7 +26,7 @@ cmd <- paste0("pv ", latest_file, " | gunzip -c | split -l 10000000 - ", parts)
 system(cmd)
 
 colN <- c("CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO")
-colT <- c(col_character(),col_double(),rep(col_character(),6))
+colT <- c(col_character(),col_integer(),rep(col_character(),6))
 read <- \(file){ read_tsv(file,comment="#",col_names=colN,col_types=colT) } 
 
 path <- fs::dir_ls(out,regexp="gcf.gz.part*") 
