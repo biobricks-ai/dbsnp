@@ -6,7 +6,9 @@ stages:
     outs:
       - download
   process:
-    cmd: Rscript R/process.R
+    cmd: |
+      export R_PROGRESSR_ENABLE=TRUE
+      Rscript R/process.R
     deps:
       - R/process.R
       - download
