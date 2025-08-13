@@ -14,12 +14,12 @@ stages:
       size: 29552227779
       nfiles: 1
   process:
-    cmd: Rscript R/process.R
+    cmd: "export R_PROGRESSR_ENABLE=TRUE\nRscript R/process.R\n"
     deps:
     - path: R/process.R
       hash: md5
-      md5: c428899314cc8195fefbbc1ce3a8d4a4
-      size: 1290
+      md5: f061e336edc879b29a7537c4b9f15bbb
+      size: 1308
     - path: download
       hash: md5
       md5: 002697b8abf00a850f22834cb8b86aa3.dir
@@ -28,6 +28,6 @@ stages:
     outs:
     - path: brick/dbSNP.parquet/
       hash: md5
-      md5: 14afe2acf3e9baa6aa25d285d62c5755.dir
-      size: 55896790772
+      md5: 0fd10b555eab91bf6246d823e80756f1.dir
+      size: 56350333459
       nfiles: 125
