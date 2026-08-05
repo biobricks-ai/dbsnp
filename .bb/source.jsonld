@@ -1,0 +1,35 @@
+{
+  "@context": "../../context/source.context.jsonld",
+  "@type": "dcat:Dataset",
+  "@id": "https://biobricks.ai/bricks/dbsnp",
+  "dcterms:title": "dbSNP - The Single Nucleotide Polymorphism Database (NCBI)",
+  "dcterms:description": "Parquet conversion of the latest NCBI dbSNP VCF release. The download stage fetches the most recent GCF reference-assembly VCF from the NCBI dbSNP FTP (ftp.ncbi.nih.gov/snp/latest_release/VCF) and the process stage writes it to brick/dbSNP.parquet. dbSNP is NCBI's public archive of short genetic variation (SNPs and small indels).",
+  "dcterms:license": "https://www.usa.gov/government-works",
+  "biobricks:licenseName": "US Government Work / public domain (NCBI places no restrictions; attribution requested)",
+  "biobricks:licenseClass": "open",
+  "biobricks:merckCommercialUse": "permitted",
+  "biobricks:licenseEvidence": [
+    {
+      "source": "R/download.R",
+      "quote": "url <- \"http://ftp.ncbi.nih.gov/snp/latest_release/VCF\" ... purrr::keep(~ grepl(\"GCF_\\\\d+\\\\.\\\\d+\\\\.gz$\", .x)) ... Downloading latest version",
+      "confidence": "high"
+    },
+    {
+      "source": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
+      "quote": "Information that is created by or for the US government on this site is within the public domain ... may be freely distributed and copied. ... NCBI itself places no restrictions on the use or distribution of the data contained therein.",
+      "confidence": "high"
+    }
+  ],
+  "biobricks:reviewed": false,
+  "biobricks:reviewNotes": "Determined by the BioBricks licensing-annotation agent (Claude). The brick is a direct parquet conversion of the NCBI dbSNP latest_release VCF pulled from the open NCBI FTP. dbSNP is produced by/for the US government (NCBI/NIH); NCBI content is public domain and NCBI places no restrictions on use or redistribution => open / permitted, with attribution to NCBI/dbSNP requested. HUMAN REVIEWER: note NCBI's standard caveat that individual original variant submitters may in principle claim IP rights, though dbSNP aggregate variation data is treated as public domain in practice.",
+  "prov:wasDerivedFrom": [
+    {
+      "@type": "dcat:Dataset",
+      "@id": "https://www.ncbi.nlm.nih.gov/snp/",
+      "dcterms:title": "dbSNP - Single Nucleotide Polymorphism Database (latest_release VCF)",
+      "dcterms:license": "https://www.usa.gov/government-works",
+      "dcat:downloadURL": "https://ftp.ncbi.nih.gov/snp/latest_release/VCF",
+      "dcterms:publisher": "National Center for Biotechnology Information (NCBI), NIH"
+    }
+  ]
+}
